@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
+    <title>Facebook Clone</title>
+</head>
+<body>
+    {% if user.is_authenticated %}
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="logo">f</div>
+            <form class="search-form" action="{% url 'search_results' %}" method="POST">
+                {% csrf_token %}
+                <div class="search-container">
+                    <input type="text" name="searched-name" class="search-bar" placeholder="Search Facebook">
+                    <button type="submit" class="search-icon">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="navbar-right">
+            <div class="profile-dropdown">
+                <img src="{{user_profile.profile_picture.url}}" alt="Profile" class="profile-img" id="profileDropdownBtn">
+                <div class="dropdown-menu" id="profileDropdownMenu">
+                    <a href="{% url 'profile' %}">
+                        <i class="fas fa-user"></i> View Profile
+                    </a>
+                    <a href="{% url 'friend_requests' %}">
+                        <i class="fas fa-user-plus"></i>
+                         Friend requests
+                    </a>
+                    <a href="{% url 'signout' %}">
+                        <i class="fas fa-sign-out-alt"></i> 
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <a href="{% url 'profile' %}" class="sidebar-item">
+                <img src="{{user_profile.profile_picture.url}}" alt="Profile">
+                <span>{{user_profile.get_full_name}}</span>
+            </a>
+
+            <a href="{% url 'friend_requests' %}" class="sidebar-item">
+                <img src="{% static 'images/friend_requests_icon.png' %}" alt="Profile">
+                <span>Friend requests</span>
+            </a>
+        </div>
+
+        <main>
+            {% for post in friends_post %}
+            <div class="post">
+                <div class="post-header">
+                    <img src="{{post.user.profile.profile_picture.url}}" alt="Profile" class="post-profile-pic">
+                    <div>
+                        <form method="POST" action="{% url 'view_others_profile' %}">
+                            {% csrf_token %}
+                            <label for = "view-profile-btn{{post.user.profile.id}}" style="font-weight: 600;">{{post.user.profile.get_full_name}}</label>
+                            <input type="hidden" name="profile-id" value="{{ post.user.profile.id }}">
+                            <button type="submit" id="view-profile-btn{{post.user.profile.id}}"></button>
+                        </form>
+                        <div style="color: #65676b; font-size: 12px;"> {{ post.created_at|timesince}} ago</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>{{post.caption}}</p>
+                    <img src="{{post.image.url}}" alt="Post image">
+                    <div class="like-count-container">
+                        <div class="like-icon">
+                            <i class="fas fa-thumbs-up"></i>
+                        </div>
+                        <span class="like-count">{{ post.total_likes }}</span>
+                    </div>
+                </div>
+                <div class="post-actions">
+                {% if post in liked_posts%}
+                    <form method="POST" action="">
+                        {% csrf_token %}
+                        <input type="hidden" name="unlike-post" value="{{ post.id }}">
+                        <button type="submit" class="like-btn active-like-btn">
+                            <i class="fas fa-thumbs-up"></i>
+                            Like
+                        </button>
+                    </form>
+                {% else %}
+                    <form method="POST" action="">
+                        {% csrf_token %}
+                        <input type="hidden" name="like-post" value="{{ post.id }}">
+                        <button type="submit" class="like-btn">
+                            <i class="fas fa-thumbs-up"></i>
+                            Like
+                        </button>
+                    </form>
+                {% endif%}
+                    <form method="POST" action="{% url 'comment_page' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="view-comments" value="{{ post.id }}">
+                    <button class="action-button">
+                        <i class="fa fa-comment"></i> Comment
+                    </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </main>
+
+        <div class="sidebar">
+            <h3 style="padding: 8px; color: #65676b;">Friends</h3>
+            {% for friend in friends_list%}
+                <form method="POST" action="{% url 'view_others_profile' %}">
+                {% csrf_token %}
+                    <label class="sidebar-item" for="others_profile_button_{{ friend.id }}">
+                        <img src="{{friend.profile_picture.url}}" alt="Contact">
+                        <span>{{friend.get_full_name}}</span>
+                    </label>
+                    <input type="hidden" name="profile-id" value="{{ friend.id }}">
+                    <button class="hidden" type="submit" id="others_profile_button_{{ friend.id }}"></button>
+                </form>
+            {% endfor %}
+
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileBtn = document.getElementById('profileDropdownBtn');
+            const dropdownMenu = document.getElementById('profileDropdownMenu');
+        
+            profileBtn.addEventListener('click', function(e) {
+                dropdownMenu.classList.toggle('active');
+            });
+        
+        document.addEventListener('click', function(e) {
+                if (!profileBtn.contains(e.target)) {
+                    dropdownMenu.classList.remove('active');
+                }
+            });
+        });
+    </script>
+    {% endif %}
+</body>
+</html>
+
+

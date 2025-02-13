@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up for Facebook</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/signup.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="logo-section">
+            <img src="https://static.xx.fbcdn.net/rsrc.php/y1/r/4lCu2zih0ca.svg" alt="Facebook">
+        </div>
+    <div class="container">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="signup-card">
+            <div class="header">
+                <h1>Create a new account</h1>
+                <p>It's quick and easy.</p>
+            </div>
+            <form action="{% url 'create_account' %}" method="POST">
+                {% csrf_token %}
+                <div class="name-row">
+                    <input type="text" name="first_name" placeholder="First name" required>
+                    <input type="text" name="last_name" placeholder="Last name" required>
+                </div>
+                
+                <input type="email" name="email" placeholder="Email address" required>
+                <input type="password" name="password1" placeholder="New password" required>
+                <input type="password" name="password2" placeholder="Confirm password" required>
+
+                <p class="field-label">Birthday</p>
+                <div class="birth-date">
+                    <select name="birth_day" required>
+                        <option value="">Day</option>
+                        {% for i in ""|rjust:"31" %}
+                        <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="birth_month" required>
+                        <option value="">Month</option>
+                        <option value="1">Jan</option>
+                        <option value="2">Feb</option>
+                        <option value="3">Mar</option>
+                        <option value="4">Apr</option>
+                        <option value="5">May</option>
+                        <option value="6">Jun</option>
+                        <option value="7">Jul</option>
+                        <option value="8">Aug</option>
+                        <option value="9">Sep</option>
+                        <option value="10">Oct</option>
+                        <option value="11">Nov</option>
+                        <option value="12">Dec</option>
+                    </select>
+                    <select name="birth_year" required>
+                        <option value="">Year</option>
+                        {% for year in range %}
+                            <option value="{{ year }}">{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <p class="field-label">Gender</p>
+                <div class="gender-options">
+                    <label class="gender-option">
+                        <span>Female</span>
+                        <input type="radio" name="gender" value="female" required>
+                    </label>
+                    <label class="gender-option">
+                        <span>Male</span>
+                        <input type="radio" name="gender" value="male" required>
+                    </label>
+                    <label class="gender-option">
+                        <span>Other</span>
+                        <input type="radio" name="gender" value="other" required>
+                    </label>
+                </div>
+
+                <p class="terms">
+                    By clicking Sign Up, you agree to our Terms, Privacy Policy and Cookies Policy.
+                    You may receive SMS notifications from us and can opt out at any time.
+                </p>
+
+                <button type="submit" class="signup-btn">Sign Up</button>
+            </form>
+        </div>
+        <div class="login-link">
+            <a href="{% url 'login' %}">Already have an account?</a>
+        </div>
+    </div>
+</body>
+</html>

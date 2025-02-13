@@ -1,0 +1,152 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f2f5;
+    color: #1c1e21;
+}
+
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 15px;
+}
+
+.requests-header {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.requests-header h1 {
+    font-size: 24px;
+    color: #1c1e21;
+}
+
+.requests-count {
+    color: #65676b;
+    font-size: 15px;
+    margin-top: 5px;
+}
+
+.request-card {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.profile-picture {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+}
+
+.request-info {
+    flex: 1;
+}
+
+.profile-name {
+    font-size: 17px;
+    font-weight: 600;
+    color: #050505;
+    margin-bottom: 4px;
+}
+
+.mutual-friends {
+    color: #65676b;
+    font-size: 15px;
+    margin-bottom: 12px;
+}
+
+.request-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn {
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+}
+
+.accept-btn {
+    background: #1b74e4;
+    color: white;
+}
+
+.accept-btn:hover {
+    background: #1668d4;
+}
+
+.delete-btn {
+    background: #e4e6eb;
+    color: #050505;
+}
+
+.delete-btn:hover {
+    background: #dadde1;
+}
+
+.no-requests {
+    text-align: center;
+    padding: 40px 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.no-requests-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    color: #65676b;
+}
+
+.no-requests-text {
+    font-size: 20px;
+    color: #1c1e21;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+        margin: 10px auto;
+    }
+
+    .request-card {
+        flex-direction: row;
+        text-align: center;
+    }
+
+    .profile-picture {
+        margin: 0 auto 12px;
+    }
+
+    .request-actions {
+        flex-direction: row;
+        gap: 8px;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+

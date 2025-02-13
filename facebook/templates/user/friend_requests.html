@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friend Requests</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/friend_requests.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="requests-header">
+            <h1>Friend Requests</h1>
+            {% if friend_requests %}
+                <div class="requests-count">{{ friend_requests|length }} pending request{{ friend_requests|length|pluralize }}</div>
+            {% endif %}
+        </div>
+
+        {% if friend_requests %}
+            {% for friend_request in friend_requests %}
+                <div class="request-card">
+                    <img src="{{ friend_request.profile_picture.url }}" alt="Profile Picture" class="profile-picture">
+                    <div class="request-info">
+                        <div class="profile-name">{{ friend_request.get_full_name }}</div>
+                        {% if friend_request.mutual_friends_count %}
+                            <div class="mutual-friends">{{ request.mutual_friends_count }} mutual friend{{ request.mutual_friends_count|pluralize }}</div>
+                        {% endif %}
+                        <div class="request-actions">
+                            <form method="POST" action="" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="confirm_request_from_user" value="{{ friend_request.user }}">
+                                <button type="submit" class="btn accept-btn">Confirm</button>
+                            </form>
+                            <form method="POST" action="" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="from_user" value="{{ friend_request.user }}">
+                                <button type="submit" class="btn delete-btn">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-requests">
+                <div class="no-requests-icon">👥</div>
+                <div class="no-requests-text">No new friend requests</div>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

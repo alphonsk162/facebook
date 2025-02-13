@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Login</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="left-section">
+            <div class="logo">facebook</div>
+            <h2 class="tagline">Facebook helps you connect and share with the people in your life.</h2>
+        </div>
+
+        <div class="login-container">
+            <div class="messages">
+                {% for message in messages %}
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            <form class="login-form" action="{% url 'signin' %}" method="post">
+                {% csrf_token %}
+                <input type="text" class="input-field" placeholder="Email address" name="email" required>
+                <input type="password" class="input-field" placeholder="Password" name="password" required>
+                <button type="submit" class="login-button">Log In</button>
+
+                <div class="divider"></div>
+                <div class="create-account">
+                    <a href="{% url 'signup' %}"><button type="button" class="create-button" >Create New Account</button></a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

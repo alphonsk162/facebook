@@ -1,0 +1,193 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.get_full_name }} - Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/profile.css' %}">
+
+</head>
+<body>
+    <div class="profile-container">
+        <form method="POST" enctype="multipart/form-data" action="{% url 'update_cover_photo' %}">
+            {% csrf_token %}
+            <div class="cover-photo">
+                <img src="{{user_profile.cover_photo.url}}" alt="Cover Photo" id="coverImg">
+                <input type="file" id="coverInput" name="cover_photo" class="file-input" accept="image/*" onchange="this.form.submit()">
+                <label for="coverInput" class="edit-cover-btn">
+                    <i class="fas fa-camera"></i>
+                    <span>Edit Cover Photo</span>
+                </label>
+            </div>
+        </form>
+
+        <!-- <form method="POST" enctype="multipart/form-data" action="{% url 'update_profile_photo' %}">
+            {% csrf_token %} -->
+            <div class="profile-info">
+                <div class="profile-picture-container">
+                    <form method="POST" enctype="multipart/form-data" action="{% url 'update_profile_photo' %}">
+                        {% csrf_token %}
+                    <div class="profile-picture">
+                        <img src="{{user_profile.profile_picture.url}}" alt="Profile Picture" id="profileImg">
+                        <input type="file" id="profileInput" name="profile_pic" class="file-input" accept="image/*" onchange="this.form.submit()">
+                        <label for="profileInput" class="edit-profile-pic">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                    </div>
+                    </form>
+                </div>
+                <div class="profile-header">
+                    <h1>{{ full_name }}</h1>
+                    {% if friend_count == 1 %}
+                    <p class="friends-count">{{ friend_count }} friend</p>
+                    {% elif friend_count > 1 %}
+                    <p class="friends-count">{{ friend_count }} friends</p>
+                    {% endif %}
+                </div>
+                <div class="profile-actions">
+                    <form method="POST" action="{% url 'view_photos' %}">
+                        {% csrf_token %}
+                        <button class="view-posts" type="submit">
+                            Photos
+                        </button>
+                    </form>
+                    <!-- <button type="button" class="add-story-btn">
+                        <i class="fas fa-plus-circle"></i>
+                        Add to Story
+                    </button> -->
+                    <button type="button" class="edit-profile-btn">
+                        <i class="fas fa-pen"></i>
+                        Edit Profile
+                    </button>
+                </div>
+            </div>
+        <!-- </form> -->
+
+
+        <div class="create-post-container">
+        <form method="POST" enctype="multipart/form-data" action="{% url 'add_post' %}">
+            {% csrf_token %}
+            <div class="post-header">
+                <img src="{{user_profile.profile_picture.url}}" alt="Profile" class="profile-pic">
+                <input type="text" name="caption" placeholder="What's on your mind?" class="mind-input">
+            </div>
+            <div id="preview-area" class="preview-area hidden">
+                <img id="image-preview" class="image-preview">
+            </div>
+            <div class="post-options">
+                <label for="file-upload" class="upload-option" id="upload-label">
+                    <i class="fas fa-image"></i>
+                    <span class="upload-text">Photo/video</span>
+                </label>
+                <input type="file" id="file-upload" name="post-image" accept="image/*" class="file-input">
+                <button type="submit" id="post-button" class="post-button hidden">Post</button>
+            </div>
+        </form>
+        </div>
+
+        
+        <div class="profile-details">
+            <div class="detail-item">
+                <i class="fas fa-briefcase"></i>
+                <div class="detail-content">
+                    <p>Works at <strong>{{user_profile.works_at }}</strong></p>
+                    <span class="detail-meta">{{ user.work_start_date }} </span>
+                </div>
+            </div>
+            <div class="detail-item">
+                <i class="fas fa-home"></i>
+                <div class="detail-content">
+                    <p>Lives in <strong>{{ user_profile.location }}</strong></p>
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <i class="fas fa-heart"></i>
+                <div class="detail-content">
+                    <p><strong>{{user_profile.relationship_status|default:"Single" }}</strong></p>
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <i class="fas fa-phone"></i>
+                <div class="detail-content">
+                    <p><strong>{{ user_profile.mobile_number }}</strong></p>
+                    <span class="detail-meta">Mobile</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content">
+        <h2>Edit Profile</h2>
+        <form method="POST" enctype="multipart/form-data" action="{% url 'edit_profile' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Works at</label>
+            <input type="text" placeholder="Where do you work?" name="works_at">
+        </div>
+        
+        <div class="form-group">
+            <label>Relationship Status</label>
+            <select name="relationship_status">
+            
+            <option value="Single">Single</option>
+            <option value="In a relationship">In a relationship</option>
+            <option value="Engaged">Engaged</option>
+            <option value="Married">Married</option>
+            <option value="It's complicated">It's complicated</option>
+            <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Mobile</label>
+            <input type="tel" placeholder="Your mobile number" name="mobile">
+        </div>
+        
+        <div class="form-group">
+            <label>Lives in</label>
+            <input type="text" placeholder="Where do you live?" name="lives_in">
+        </div>
+
+        <button type="submit" class="save-btn">Save</button>
+        </form>
+    </div>
+    </div>
+
+    <script>
+        document.querySelector('.edit-profile-btn').addEventListener('click', function(e) {
+            document.getElementById('modalOverlay').classList.add('active');
+        });
+
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+
+        document.getElementById('file-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+                const reader = new FileReader();
+                const previewArea = document.getElementById('preview-area');
+                const imagePreview = document.getElementById('image-preview');
+                const postButton = document.getElementById('post-button');
+                const uploadText = document.querySelector('.upload-text');
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    previewArea.classList.remove('hidden');
+                    postButton.classList.remove('hidden');
+                    uploadText.textContent = 'Change Photo';
+                }
+                
+                reader.readAsDataURL(file);
+        });
+
+
+    </script>
+</body>
+</html>

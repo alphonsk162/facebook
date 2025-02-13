@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.get_full_name }} - Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/others_profile.css' %}">
+
+</head>
+<body>
+    <div class="profile-container">
+            <div class="cover-photo">
+                <img src="{{profile.cover_photo.url}}" alt="Cover Photo" id="coverImg">
+            </div>
+
+            <div class="profile-info">
+                <div class="profile-picture-container">
+                    <div class="profile-picture">
+                        <img src="{{profile.profile_picture.url}}" alt="Profile Picture" id="profileImg">
+
+                    </div>
+                </div>
+                <div class="profile-header">
+                    <h1>{{ full_name }}</h1>
+                    {% if friend_count == 1 and mutual_friends_count == 1%}
+                    <p class="friends-count">{{ friend_count }} friend  · {{ mutual_friends_count }} Mutual friend</p>
+                    {% elif friend_count == 1 and mutual_friends_count > 1 %}
+                    <p class="friends-count">{{ friend_count }} friend · {{ mutual_friends_count }} Mutual friends</p>
+                    {% elif friend_count > 1 and mutual_friends_count == 1 %}
+                    <p class="friends-count">{{ friend_count }} friends · {{ mutual_friends_count }} Mutual friend</p>
+                    {% elif friend_count > 1 and mutual_friends_count > 1 %}
+                    <p class="friends-count">{{ friend_count }} friends · {{ mutual_friends_count }} Mutual friends</p>
+                    {% else %}
+                    <p class="friends-count">0 friends · 0 Mutual friends</p>
+                    {% endif %}
+                </div>
+
+                <div class="profile-actions">
+                    {% if not profile.user in friends_list and  profile.user != requesting_user %}
+                        {% if profile.user.username in sent_friend_requests %}
+                        <form method="POST" action="" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="cancel_request" value="{{ profile.user.id }}">
+                            <input type="hidden" name="searched-name" value="{{ searched_name }}">
+                            <button class="add-friend-btn friend-requested">Friend Request Sent</button>
+                        </form>
+                        {% elif profile.user.username in received_friend_requests %}
+                        <form method="POST" action="" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="confirm_request" value="{{ profile.user.id }}">
+                            <input type="hidden" name="searched-name" value="{{ searched_name }}">
+                            <button type="submit" class="add-friend-btn friend-requested" >Confirm</button>
+                        </form>
+                        {% else %}
+                            <form method="POST" action="" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="to_user_id" value="{{ profile.user.id }}">
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <input type="hidden" name="searched-name" value="{{ searched_name }}">
+                                <button type="submit" class="add-friend-btn">Add Friend</button>
+                            </form>
+                        {% endif %}
+                    {% elif profile.user != requesting_user %}
+                        <form method="POST" action="" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="unfriend" value="{{ profile.user.id }}">
+                            <input type="hidden" name="searched-name" value="{{ searched_name }}">
+                            <button class="friend-btn">Friends</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+
+
+
+
+
+        <div class="profile-details">
+            <div class="detail-item">
+                <i class="fas fa-briefcase"></i>
+                <div class="detail-content">
+                    <p>Works at <strong>{{profile.works_at }}</strong></p>
+                    <span class="detail-meta">{{ user.work_start_date }} </span>
+                </div>
+            </div>
+            <div class="detail-item">
+                <i class="fas fa-home"></i>
+                <div class="detail-content">
+                    <p>Lives in <strong>{{ profile.location }}</strong></p>
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <i class="fas fa-heart"></i>
+                <div class="detail-content">
+                    <p><strong>{{profile.relationship_status|default:"Single" }}</strong></p>
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <i class="fas fa-phone"></i>
+                <div class="detail-content">
+                    <p><strong>{{ profile.mobile_number }}</strong></p>
+                    <span class="detail-meta">Mobile</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content">
+        <h2>Edit Profile</h2>
+        <form method="POST" enctype="multipart/form-data" action="{% url 'edit_profile' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Works at</label>
+            <input type="text" placeholder="Where do you work?" name="works_at">
+        </div>
+        
+        <div class="form-group">
+            <label>Relationship Status</label>
+            <select name="relationship_status">
+            
+            <option value="Single">Single</option>
+            <option value="In a relationship">In a relationship</option>
+            <option value="Engaged">Engaged</option>
+            <option value="Married">Married</option>
+            <option value="It's complicated">It's complicated</option>
+            <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Mobile</label>
+            <input type="tel" placeholder="Your mobile number" name="mobile">
+        </div>
+        
+        <div class="form-group">
+            <label>Lives in</label>
+            <input type="text" placeholder="Where do you live?" name="lives_in">
+        </div>
+
+        <button type="submit" class="save-btn">Save</button>
+        </form>
+    </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/search_results.css' %}">
+
+</head>
+<body>
+    <div class="container">
+        <div class="search-results">
+            <div class="search-header">
+                <h2>Search results for "{{ searched_name }}"</h2>
+            </div>
+            
+            {% if profiles %}
+                {% for profile in profiles %}
+                <label class="profile-card">
+                    <img src="{{ profile.profile_picture.url }}"  class="profile-picture">
+                    <div class="profile-info">
+                        <form method="POST" action="{% url 'view_others_profile' %}">
+                            {% csrf_token %}
+                        <label class="user-details" for="view-profile-button{{profile.id}}">
+                            <div class="user-name">{{ profile.get_full_name }}</div>
+                            {% if profile.location != "Not Added" %}
+                            <div class="user-meta">Lives in {{ profile.location }}</div>
+                            {% endif %}
+                            {% if profile.works_at != "Not Added" %}
+                            <div class="user-meta">Works at {{ profile.works_at }}</div>
+                            {% endif %}
+                            {% if profile.mutual_friends_count %}
+                            <div class="mutual-friends">{{ profile.mutual_friends_count }} mutual friends</div>
+                            {% endif %}
+                        </label>
+                        <input type="hidden" name="profile-id" value="{{ profile.id }}">
+                        <button type="submit" id="view-profile-button{{profile.id}}" style="display:none"></button>
+                        </form>
+                        {% if not profile.user in friends_list and  profile.user != requesting_user %}
+                            {% if profile.user.username in sent_friend_requests %}
+                            <form method="POST" action="" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="cancel_request" value="{{ profile.user.id }}">
+                                <input type="hidden" name="searched-name" value="{{ searched_name }}">
+                                <button class="add-friend-btn friend-requested">Friend Request Sent</button>
+                            </form>
+                            {% elif profile.user.username in received_friend_requests %}
+                            <form method="POST" action="" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="confirm_request" value="{{ profile.user.id }}">
+                                <input type="hidden" name="searched-name" value="{{ searched_name }}">
+                                <button type="submit" class="add-friend-btn friend-requested" >Confirm</button>
+                            </form>
+                            {% else %}
+                                <form method="POST" action="" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="to_user_id" value="{{ profile.user.id }}">
+                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                    <input type="hidden" name="searched-name" value="{{ searched_name }}">
+                                    <button type="submit" class="add-friend-btn">Add Friend</button>
+                                </form>
+                            {% endif %}
+                        {% elif profile.user != requesting_user %}
+                            <form method="POST" action="" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="unfriend" value="{{ profile.user.id }}">
+                                <input type="hidden" name="searched-name" value="{{ searched_name }}">
+                                <button class="add-friend-btn friend-requested">Friends</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </label>
+                {% endfor %}
+            {% else %}
+                <div class="no-results">
+                    <div class="no-results-icon">🔍</div>
+                    <div class="no-results-text">No results found</div>
+                    <div class="no-results-suggestion">
+                        Try different keywords or check the spelling
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

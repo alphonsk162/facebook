@@ -1,0 +1,8 @@
+Requirement already satisfied: elasticsearch-dsl in /home/asus/Desktop/facebook project/venv/lib/python3.12/site-packages (8.17.1)
+Requirement already satisfied: python-dateutil in /home/asus/Desktop/facebook project/venv/lib/python3.12/site-packages (from elasticsearch-dsl) (2.9.0.post0)
+Requirement already satisfied: typing-extensions in /home/asus/Desktop/facebook project/venv/lib/python3.12/site-packages (from elasticsearch-dsl) (4.12.2)
+Requirement already satisfied: elasticsearch<9.0.0,>=8.0.0 in /home/asus/Desktop/facebook project/venv/lib/python3.12/site-packages (from elasticsearch-dsl) (8.17.1)
+Requirement already satisfied: elastic-transport<9.0.0,>=8.0.0 in /home/asus/Desktop/facebook project/venv/lib/python3.12/site-packages (from elasticsearch-dsl) (8.17.0)
+Requirement already satisfied: urllib3<3,>=1.26.2 in /home/asus/Desktop/facebook project/venv/lib/python3.12/site-packages (from elastic-transport<9.0.0,>=8.0.0->elasticsearch-dsl) (2.3.0)
+Requirement already satisfied: certifi in /home/asus/Desktop/facebook project/venv/lib/python3.12/site-packages (from elastic-transport<9.0.0,>=8.0.0->elasticsearch-dsl) (2025.1.31)
+Requirement already satisfied: six>=1.5 in /home/asus/Desktop/facebook project/venv/lib/python3.12/site-packages (from python-dateutil->elasticsearch-dsl) (1.17.0)
