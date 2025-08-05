@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     "user",
     "feed",
     "django_elasticsearch_dsl",
+    'rest_framework',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -93,23 +95,31 @@ WSGI_APPLICATION = "facebook.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": os.getenv("DB_NAME"),
+#         "USER": os.getenv("DB_USER"),
+#         "PASSWORD": os.getenv("PASSWORD"),
+#         "HOST": os.getenv("HOST"),
+#         "PORT": os.getenv("PORT"),
+#     }
+# }
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("PASSWORD"),
-        "HOST": os.getenv("HOST"),
-        "PORT": os.getenv("PORT"),
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
 
-if "DATABASE_URL" in os.environ:
-    DATABASES["default"] = dj_database_url.config(
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
+
+# if "DATABASE_URL" in os.environ:
+#     DATABASES["default"] = dj_database_url.config(
+#         conn_max_age=600,
+#         conn_health_checks=True,
+#     )
 
 
 # Password validation
@@ -159,51 +169,53 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-# LOCAL_ELASTICSEARCH_URL = "http://127.0.0.1:9200/"
-
-
-# ELASTICSEARCH_DSL = {
-#     "default": {
-#         "hosts": "http://localhost:9200",
-#         "http_auth": (
-#             os.getenv("ELASTIC_USERNAME"),
-#             os.getenv("ELASTIC_PASSWORD"),
-#         ),
-#     }
-# }
-
 LOCAL_ELASTICSEARCH_URL = "http://127.0.0.1:9200/"
-REMOTE_ELASTICSEARCH_URL = os.getenv("ELASTICSEARCH_URL", "http://127.0.0.1:9200")
-IS_PROD = os.getenv("IS_PROD")
-if IS_PROD:
-    ELASTICSEARCH_DSL = {
-        "default": {
-            "hosts": REMOTE_ELASTICSEARCH_URL,
-            "timeout": 30,
-            "http_auth": (os.getenv("BONSAI_USERNAME"), os.getenv("BONSAI_PASSWORD")),
-            "verify_certs": False,
-            "headers": {"User-Agent": "Elasticsearch"},
-        },
-    }
-else:
-    ELASTICSEARCH_DSL = {
-        "default": {
-            "hosts": "http://localhost:9200",
-            "http_auth": (
-                os.getenv("ELASTIC_USERNAME"),
-                os.getenv("ELASTIC_PASSWORD"),
-            ),
-        }
-    }
 
 
-ES_CLIENT = Elasticsearch(
-    [REMOTE_ELASTICSEARCH_URL],
-    basic_auth=(os.getenv("BONSAI_USERNAME"), os.getenv("BONSAI_PASSWORD")),
-    request_timeout=30,
-    verify_certs=False,
-    headers={"User-Agent": "Elasticsearch"},
-)
+ELASTICSEARCH_DSL = {
+    "default": {
+        "hosts": "https://localhost:9200",
+        "http_auth": (
+            os.getenv("ELASTIC_USERNAME"),
+            os.getenv("ELASTIC_PASSWORD"),
+        ),
+        'verify_certs': False,
+    }
+}
+
+
+# LOCAL_ELASTICSEARCH_URL = "http://127.0.0.1:9200/"
+# REMOTE_ELASTICSEARCH_URL = os.getenv("ELASTICSEARCH_URL", "http://127.0.0.1:9200")
+# IS_PROD = os.getenv("IS_PROD")
+# if IS_PROD:
+#     ELASTICSEARCH_DSL = {
+#         "default": {
+#             "hosts": REMOTE_ELASTICSEARCH_URL,
+#             "timeout": 30,
+#             "http_auth": (os.getenv("BONSAI_USERNAME"), os.getenv("BONSAI_PASSWORD")),
+#             "verify_certs": False,
+#             "headers": {"User-Agent": "Elasticsearch"},
+#         },
+#     }
+# else:
+#     ELASTICSEARCH_DSL = {
+#         "default": {
+#             "hosts": "http://localhost:9200",
+#             "http_auth": (
+#                 os.getenv("ELASTIC_USERNAME"),
+#                 os.getenv("ELASTIC_PASSWORD"),
+#             ),
+#         }
+#     }
+
+
+# ES_CLIENT = Elasticsearch(
+#     [REMOTE_ELASTICSEARCH_URL],
+#     basic_auth=(os.getenv("BONSAI_USERNAME"), os.getenv("BONSAI_PASSWORD")),
+#     request_timeout=30,
+#     verify_certs=False,
+#     headers={"User-Agent": "Elasticsearch"},
+# )
 
 
 # CELERY_BROKER_URL = "redis://localhost:6379/0"

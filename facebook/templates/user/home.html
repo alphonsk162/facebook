@@ -82,25 +82,28 @@
                     </div>
                 </div>
                 <div class="post-actions">
-                {% if post in liked_posts%}
-                    <form method="POST" action="">
-                        {% csrf_token %}
-                        <input type="hidden" name="unlike-post" value="{{ post.id }}">
-                        <button type="submit" class="like-btn active-like-btn">
-                            <i class="fas fa-thumbs-up"></i>
-                            Like
-                        </button>
-                    </form>
-                {% else %}
-                    <form method="POST" action="">
-                        {% csrf_token %}
-                        <input type="hidden" name="like-post" value="{{ post.id }}">
-                        <button type="submit" class="like-btn">
-                            <i class="fas fa-thumbs-up"></i>
-                            Like
-                        </button>
-                    </form>
-                {% endif%}
+
+{% if post in liked_posts %}
+  <button 
+    class="like-btn active-like-btn" 
+    data-post-id="{{ post.id }}" 
+    data-liked="true" 
+    onclick="toggleLike(this)">
+    <i class="fas fa-thumbs-up"></i>
+    <span class="like-text">Liked</span>
+  </button>
+{% else %}
+  <button 
+    class="like-btn" 
+    data-post-id="{{ post.id }}" 
+    data-liked="false" 
+    onclick="toggleLike(this)">
+    <i class="fas fa-thumbs-up"></i>
+    <span class="like-text">Like</span>
+  </button>
+{% endif %}
+
+
                     <form method="POST" action="{% url 'comment_page' %}">
                     {% csrf_token %}
                     <input type="hidden" name="view-comments" value="{{ post.id }}">
@@ -130,20 +133,52 @@
         </div>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const profileBtn = document.getElementById('profileDropdownBtn');
-            const dropdownMenu = document.getElementById('profileDropdownMenu');
-        
-            profileBtn.addEventListener('click', function(e) {
-                dropdownMenu.classList.toggle('active');
-            });
-        
-        document.addEventListener('click', function(e) {
-                if (!profileBtn.contains(e.target)) {
-                    dropdownMenu.classList.remove('active');
-                }
-            });
-        });
+function getCSRFToken() {
+  return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
+function toggleLike(btn) {
+  const postId = btn.getAttribute('data-post-id');
+  const liked = btn.getAttribute('data-liked') === 'true';
+  const action = liked ? 'unlike' : 'like';
+
+  fetch('/api/toggle-like/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-CSRFToken': getCSRFToken()
+    },
+    body: `post_id=${postId}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log("API Response:", data);
+    if (data.liked !== undefined) {
+      btn.setAttribute('data-liked', data.liked);
+      btn.classList.toggle('active-like-btn', data.liked);
+      btn.querySelector('.like-text').innerText = data.liked ? 'Liked' : 'Like';
+    }
+  });
+}
+
+// Keep other DOMContentLoaded-related code inside here
+document.addEventListener('DOMContentLoaded', function() {
+    const profileBtn = document.getElementById('profileDropdownBtn');
+    const dropdownMenu = document.getElementById('profileDropdownMenu');
+
+    profileBtn?.addEventListener('click', function(e) {
+        dropdownMenu?.classList.toggle('active');
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!profileBtn?.contains(e.target)) {
+            dropdownMenu?.classList.remove('active');
+        }
+    });
+});
+
+
+
     </script>
     {% endif %}
 </body>

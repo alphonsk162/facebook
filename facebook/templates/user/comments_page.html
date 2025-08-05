@@ -12,76 +12,66 @@
     <div class="container">
         <img src="{{post.image.url}}" alt="Profile" class="post-image">
         
-        <div class="comments-section">
-            {% for parent_comment in parent_comments%}
-            <div class="comment">
-                <img src="{{parent_comment.user_profile.profile_picture.url}}" alt="Profile" class="user-profile-pic">
-                <div class="comment-content">
-                    <div class="comment-bubble">
-                        <div class="username">{{parent_comment.user_profile.get_full_name}}</div>
-                        <div class="comment-text">{{parent_comment.content}}</div>
-                    </div>
-                    <div class="comment-actions">
-                        <a href="#" class="action-link" onclick="toggleReplyInput(event, {{ parent_comment.id }})">Reply</a>
-                        <span class="timestamp">{{ parent_comment.created_at|timesince}} ago</span>
-                    </div>
-                    <div id="reply-form-{{ parent_comment.id }}" class="reply-input-container" style="display: none;">
-                        <form method="POST" action="">
-                            {% csrf_token %}
-                            <input type="hidden" name="post-id" value="{{ post.id }}">
-                            <input type="hidden" name="parent-id" value="{{ parent_comment.id }}">
-                            <input type="hidden" name="reply-to" value="{{parent_comment.user_profile.get_full_name}}">
-                            <input class="reply-input" placeholder="Write a reply..." name="add-reply">
-                            <button class="send-button" type="submit">Send</button>
-                        </form>
-                    </div>
+<div class="comments-section">
+    {% for parent_comment in parent_comments %}
+    <div class="comment" id="comment-{{ parent_comment.id }}">
+        <img src="{{ parent_comment.user_profile.profile_picture.url }}" alt="Profile" class="user-profile-pic">
+        <div class="comment-content">
+            <div class="comment-bubble">
+                <div class="username">{{ parent_comment.user_profile.get_full_name }}</div>
+                <div class="comment-text">{{ parent_comment.content }}</div>
+            </div>
+            <div class="comment-actions">
+                <a href="#" class="action-link" onclick="toggleReplyInput(event, {{ parent_comment.id }}, '{{ parent_comment.user_profile.get_full_name }}')">Reply</a>
+                <span class="timestamp">{{ parent_comment.created_at|timesince }} ago</span>
+            </div>
 
-                    {% for child_comment in child_comments|get_item:parent_comment %}
-                    <div class="replies">
-                        <div class="comment">
-                            <img src="{{child_comment.user_profile.profile_picture.url}}" alt="Profile" class="user-profile-pic">
-                            <div class="comment-content">
-                                <div class="comment-bubble">
-                                    <div class="username">{{child_comment.user_profile.get_full_name}}</div>
-                                    <div class="comment-text">
-                                        <span>{{child_comment.reply_to}}</span>
-                                        {{child_comment.content}}
-                                    </div>
+            <div id="replies-for-{{ parent_comment.id }}">
+                {% for child_comment in child_comments|get_item:parent_comment %}
+                <div class="replies" id="comment-{{ child_comment.id }}">
+                    <div class="comment">
+                        <img src="{{ child_comment.user_profile.profile_picture.url }}" alt="Profile" class="user-profile-pic">
+                        <div class="comment-content">
+                            <div class="comment-bubble">
+                                <div class="username">{{ child_comment.user_profile.get_full_name }}</div>
+                                <div class="comment-text">
+                                    <span>{{ child_comment.reply_to }}</span> {{ child_comment.content }}
                                 </div>
-                                <div class="comment-actions">
-                                    <a href="#" class="action-link" onclick="toggleReplyInput(event, {{ child_comment.id }})">Reply</a>
-                                    <span class="timestamp">{{ child_comment.created_at|timesince}} ago</span>
-                                </div>
-                                <div id="reply-form-{{ child_comment.id }}" class="reply-input-container" style="display: none;">
-                                    <form method="POST" action="">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="post-id" value="{{ post.id }}">
-                                        <input type="hidden" name="parent-id" value="{{ parent_comment.id }}">
-                                        <input type="hidden" name="reply-to" value="{{child_comment.user_profile.get_full_name}}">
-                                        <input class="reply-input" placeholder="Write a reply..." name="add-reply">
-                                        <button class="send-button" type="submit">Send</button>
-                                    </form>
-                                </div>
+                            </div>
+                            <div class="comment-actions">
+                                <a href="#" class="action-link" onclick="toggleReplyInput(event, {{ child_comment.id }}, '{{ child_comment.user_profile.get_full_name }}')">Reply</a>
+                                <span class="timestamp">{{ child_comment.created_at|timesince }} ago</span>
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
 
-            <div class="comment-input-container">
-                <img src="{{user_profile.profile_picture.url}}" alt="Profile" class="user-profile-pic" >
-                <div class="comment-input-wrapper">
-                    <form method = "POST" action = "" >
-                        {% csrf_token %}
-                        <input type="hidden" name="post-id" value="{{ post.id }}">
-                        <input class="comment-input" placeholder="Write a comment..." name="add-comment" id="comment-input"></input>
-                        <button class="send-button" type="submit">Send</button>
-                    </form>
-                </div>
+            <div id="reply-form-{{ parent_comment.id }}" class="reply-input-container" style="display: none;">
+                <form onsubmit="submitReply(event, {{ post.id }}, {{ parent_comment.id }})">
+                    {% csrf_token %}
+                    <input type="hidden" name="reply_to" value="{{ parent_comment.user_profile.get_full_name }}">
+                    <input class="reply-input" placeholder="Write a reply..." name="content" required>
+                    <button class="send-button" type="submit">Send</button>
+                </form>
             </div>
         </div>
+    </div>
+    {% endfor %}
+
+    <div class="comment-input-container">
+        <img src="{{ user_profile.profile_picture.url }}" alt="Profile" class="user-profile-pic">
+        <div class="comment-input-wrapper">
+            <form onsubmit="submitComment(event, {{ post.id }})">
+                {% csrf_token %}
+                <input class="comment-input" placeholder="Write a comment..." name="content" required>
+                <button class="send-button" type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+</div>
+
     </div>
     <script>
         function toggleReplyInput(event, commentId) {
@@ -93,6 +83,102 @@
                 replyForm.style.display = 'none';
             }
         }
+        function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
+function toggleReplyInput(event, commentId, replyToName) {
+    event.preventDefault();
+    const replyForm = document.getElementById(`reply-form-${commentId}`);
+    const replyToInput = replyForm.querySelector('input[name="reply_to"]');
+    replyToInput.value = replyToName;
+    replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
+}
+
+function submitComment(event, postId) {
+    event.preventDefault();
+    const form = event.target;
+    const content = form.content.value;
+
+    fetch('/api/add-comment/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': getCSRFToken()
+        },
+        body: `post_id=${postId}&content=${encodeURIComponent(content)}`
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const newComment = `
+                <div class="comment" id="comment-${data.comment.id}">
+                    <img src="${data.comment.profile_pic}" alt="Profile" class="user-profile-pic">
+                    <div class="comment-content">
+                        <div class="comment-bubble">
+                            <div class="username">${data.comment.user}</div>
+                            <div class="comment-text">${data.comment.content}</div>
+                        </div>
+                        <div class="comment-actions">
+                            <a href="#" class="action-link" onclick="toggleReplyInput(event, ${data.comment.id}, '${data.comment.user}')">Reply</a>
+                            <span class="timestamp">Just now</span>
+                        </div>
+                        <div id="replies-for-${data.comment.id}"></div>
+                        <div id="reply-form-${data.comment.id}" class="reply-input-container" style="display: none;">
+                            <form onsubmit="submitReply(event, ${postId}, ${data.comment.id})">
+                                <input type="hidden" name="reply_to" value="${data.comment.user}">
+                                <input class="reply-input" placeholder="Write a reply..." name="content" required>
+                                <button class="send-button" type="submit">Send</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+            form.closest(".comments-section").insertAdjacentHTML('afterbegin', newComment);
+            form.reset();
+        }
+    });
+}
+
+function submitReply(event, postId, parentId) {
+    event.preventDefault();
+    const form = event.target;
+    const content = form.content.value;
+    const replyTo = form.reply_to.value;
+
+    fetch('/api/add-comment/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': getCSRFToken()
+        },
+        body: `post_id=${postId}&parent_id=${parentId}&reply_to=${encodeURIComponent(replyTo)}&content=${encodeURIComponent(content)}`
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const replyHTML = `
+                <div class="replies" id="comment-${data.comment.id}">
+                    <div class="comment">
+                        <img src="${data.comment.profile_pic}" alt="Profile" class="user-profile-pic">
+                        <div class="comment-content">
+                            <div class="comment-bubble">
+                                <div class="username">${data.comment.user}</div>
+                                <div class="comment-text"><span>${data.comment.reply_to}</span> ${data.comment.content}</div>
+                            </div>
+                            <div class="comment-actions">
+                                <span class="timestamp">Just now</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById(`replies-for-${parentId}`).insertAdjacentHTML('beforeend', replyHTML);
+            form.reset();
+            form.parentElement.style.display = 'none';
+        }
+    });
+}
     </script>
 </body>
 </html>

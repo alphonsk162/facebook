@@ -149,15 +149,15 @@ def search_results(request):
         searched_name = request.POST.get("searched-name").split(" ")
         users = UserDetails.objects.all()
         friends_list = find_friends(request.user)
-        search_results = search_users_by_name(
-            request.POST.get("searched-name")
-        ).execute()
-        search_result_objects = []
-        for profile in search_results:
-            search_result_objects.append(UserDetails.objects.get(id=profile.meta.id))
+        # search_results = search_users_by_name(
+        #     request.POST.get("searched-name")
+        # ).execute()
+        # search_result_objects = []
+        # for profile in search_results:
+        #     search_result_objects.append(UserDetails.objects.get(id=profile.meta.id))
         context = {
-            "profiles": search_result_objects,
-            # "profiles": find_searched_results(searched_name),
+            # "profiles": search_result_objects,
+            "profiles": find_searched_results(searched_name),
             "searched_name": " ".join(searched_name),
             "sent_friend_requests": find_sent_friend_requests(request.user),
             "received_friend_requests": find_received_friend_requests(request.user),
@@ -174,15 +174,15 @@ def search_results(request):
         searched_name = request.POST.get("searched-name").split(" ")
         users = UserDetails.objects.all()
         friends_list = find_friends(request.user)
-        search_result_objects = []
-        search_results = search_users_by_name(
-            request.POST.get("searched-name")
-        ).execute()
-        for profile in search_results:
-            search_result_objects.append(UserDetails.objects.get(id=profile.meta.id))
+        # search_result_objects = []
+        # search_results = search_users_by_name(
+        #     request.POST.get("searched-name")
+        # ).execute()
+        # for profile in search_results:
+        #     search_result_objects.append(UserDetails.objects.get(id=profile.meta.id))
         context = {
-            "profiles": search_result_objects,
-            # "profiles": find_searched_results(searched_name),
+            # "profiles": search_result_objects,
+            "profiles": find_searched_results(searched_name),
             "searched_name": " ".join(searched_name),
             "sent_friend_requests": find_sent_friend_requests(request.user),
             "received_friend_requests": find_received_friend_requests(request.user),
@@ -197,15 +197,15 @@ def search_results(request):
         FriendRequest.objects.get(from_user=from_user, to_user=to_user).delete()
         searched_name = request.POST.get("searched-name").split(" ")
         friends_list = find_friends(request.user)
-        search_results = search_users_by_name(
-            request.POST.get("searched-name")
-        ).execute()
-        search_result_objects = []
-        for profile in search_results:
-            search_result_objects.append(UserDetails.objects.get(id=profile.meta.id))
+        # search_results = search_users_by_name(
+        #     request.POST.get("searched-name")
+        # ).execute()
+        # search_result_objects = []
+        # for profile in search_results:
+        #     search_result_objects.append(UserDetails.objects.get(id=profile.meta.id))
         context = {
-            "profiles": search_result_objects,
-            # "profiles": find_searched_results(searched_name),
+            # "profiles": search_result_objects,
+            "profiles": find_searched_results(searched_name),
             "searched_name": " ".join(searched_name),
             "sent_friend_requests": find_sent_friend_requests(request.user),
             "received_friend_requests": find_received_friend_requests(request.user),
@@ -222,15 +222,15 @@ def search_results(request):
         ).delete()
         searched_name = request.POST.get("searched-name").split(" ")
         friends_list = find_friends(request.user)
-        search_results = search_users_by_name(
-            request.POST.get("searched-name")
-        ).execute()
-        search_result_objects = []
-        for profile in search_results:
-            search_result_objects.append(UserDetails.objects.get(id=profile.meta.id))
+        # search_results = search_users_by_name(
+        #     request.POST.get("searched-name")
+        # ).execute()
+        # search_result_objects = []
+        # for profile in search_results:
+        #     search_result_objects.append(UserDetails.objects.get(id=profile.meta.id))
         context = {
-            "profiles": search_result_objects,
-            # "profiles": find_searched_results(searched_name),
+            # "profiles": search_result_objects,
+            "profiles": find_searched_results(searched_name),
             "searched_name": " ".join(searched_name),
             "sent_friend_requests": find_sent_friend_requests(request.user),
             "received_friend_requests": find_received_friend_requests(request.user),
@@ -243,15 +243,15 @@ def search_results(request):
         searched_name = request.POST.get("searched-name").split(" ")
         users = UserDetails.objects.all()
         friends_list = find_friends(request.user)
-        search_results = search_users_by_name(
-            request.POST.get("searched-name")
-        ).execute()
-        search_result_objects = []
-        for profile in search_results:
-            search_result_objects.append(UserDetails.objects.get(id=profile.meta.id))
+        # search_results = search_users_by_name(
+        #     request.POST.get("searched-name")
+        # ).execute()
+        # search_result_objects = []
+        # for profile in search_results:
+        #     search_result_objects.append(UserDetails.objects.get(id=profile.meta.id))
         context = {
-            "profiles": search_result_objects,
-            # "profiles": find_searched_results(searched_name),
+            # "profiles": search_result_objects,
+            "profiles": find_searched_results(searched_name),
             "searched_name": " ".join(searched_name),
             "sent_friend_requests": find_sent_friend_requests(request.user),
             "received_friend_requests": find_received_friend_requests(request.user),

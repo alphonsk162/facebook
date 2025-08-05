@@ -37,38 +37,17 @@
                         <input type="hidden" name="profile-id" value="{{ profile.id }}">
                         <button type="submit" id="view-profile-button{{profile.id}}" style="display:none"></button>
                         </form>
-                        {% if not profile.user in friends_list and  profile.user != requesting_user %}
-                            {% if profile.user.username in sent_friend_requests %}
-                            <form method="POST" action="" style="display: inline;">
-                                {% csrf_token %}
-                                <input type="hidden" name="cancel_request" value="{{ profile.user.id }}">
-                                <input type="hidden" name="searched-name" value="{{ searched_name }}">
-                                <button class="add-friend-btn friend-requested">Friend Request Sent</button>
-                            </form>
-                            {% elif profile.user.username in received_friend_requests %}
-                            <form method="POST" action="" style="display: inline;">
-                                {% csrf_token %}
-                                <input type="hidden" name="confirm_request" value="{{ profile.user.id }}">
-                                <input type="hidden" name="searched-name" value="{{ searched_name }}">
-                                <button type="submit" class="add-friend-btn friend-requested" >Confirm</button>
-                            </form>
-                            {% else %}
-                                <form method="POST" action="" style="display: inline;">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="to_user_id" value="{{ profile.user.id }}">
-                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                                    <input type="hidden" name="searched-name" value="{{ searched_name }}">
-                                    <button type="submit" class="add-friend-btn">Add Friend</button>
-                                </form>
-                            {% endif %}
-                        {% elif profile.user != requesting_user %}
-                            <form method="POST" action="" style="display: inline;">
-                                {% csrf_token %}
-                                <input type="hidden" name="unfriend" value="{{ profile.user.id }}">
-                                <input type="hidden" name="searched-name" value="{{ searched_name }}">
-                                <button class="add-friend-btn friend-requested">Friends</button>
-                            </form>
-                        {% endif %}
+{% if not profile.user in friends_list and profile.user != requesting_user %}
+    {% if profile.user.username in sent_friend_requests %}
+        <button class="add-friend-btn friend-requested" onclick="cancelFriendRequest({{ profile.user.id }}, this)">Friend Request Sent</button>
+    {% elif profile.user.username in received_friend_requests %}
+        <button class="add-friend-btn" onclick="confirmFriendRequest({{ profile.user.id }}, this)">Confirm</button>
+    {% else %}
+        <button class="add-friend-btn" onclick="sendFriendRequest({{ profile.user.id }}, this)">Add Friend</button>
+    {% endif %}
+{% elif profile.user != requesting_user %}
+    <button class="add-friend-btn friend-requested" onclick="unfriendUser({{ profile.user.id }}, this)">Friends</button>
+{% endif %}
                     </div>
                 </label>
                 {% endfor %}
@@ -83,5 +62,84 @@
             {% endif %}
         </div>
     </div>
+
+<script>
+  function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+  }
+
+  function sendFriendRequest(userId, btn) {
+  fetch('/api/friend-request/send/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCSRFToken()
+    },
+    body: JSON.stringify({ to_user_id: userId })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'request_sent') {
+      btn.innerText = 'Friend Request Sent';
+      btn.classList.add('friend-requested');
+      btn.setAttribute('onclick', `cancelFriendRequest(${userId}, this)`);
+    }
+  });
+}
+
+function cancelFriendRequest(userId, btn) {
+  fetch('/api/friend-request/cancel/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCSRFToken()
+    },
+    body: JSON.stringify({ to_user_id: userId })
+  })
+  .then(res => res.json())
+  .then(data => {
+     if (data.status === 'request_cancelled') {
+      btn.innerText = 'Add Friend';
+      btn.classList.remove('friend-requested');
+      btn.setAttribute('onclick', `sendFriendRequest(${userId}, this)`);
+    }
+  });
+}
+
+function confirmFriendRequest(userId, btn) {
+  fetch('/api/friend-request/confirm/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCSRFToken()
+    },
+    body: JSON.stringify({ from_user_id: userId })
+  })
+  .then(res => res.json())
+  .then(data => {
+      btn.innerText = 'Friends';
+      btn.classList.add('friend-requested');
+      btn.setAttribute('onclick', `unfriendUser(${userId}, this)`);
+  });
+}
+
+function unfriendUser(userId, btn) {
+  fetch('/api/friend-request/unfriend/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCSRFToken()
+    },
+    body: JSON.stringify({ user_id: userId })
+  })
+  .then(res => res.json())
+  .then(data => {
+      btn.innerText = 'Add Friend';
+      btn.classList.remove('friend-requested');
+      btn.setAttribute('onclick', `sendFriendRequest(${userId}, this)`);
+  });
+}
+</script>
+
 </body>
 </html>
